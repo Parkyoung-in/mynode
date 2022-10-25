@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h1>회원관리페이지</h1>
+    <!-- insert, delete, update  : DB에서 성공 또는 실패를 넘겨줌  -->
+    <a href="http://127.0.0.1:5500/mynodejs_/public/ex06Join.html"><button>회원가입</button></a>
+    <a href="http://127.0.0.1:5500/mynodejs_/public/ex06Delete.html"><button>회원삭제</button></a>
+    <a href="http://127.0.0.1:5500/mynodejs_/public/ex06Update.html"><button>회원수정</button></a>
+    
+    <!-- SELECT  : DB에서 data를 넘겨줌-->
+
+    <!-- 1. 회원전체검색 : 그냥 table에 있는 전체 값을 검색하면 돼서 따로 html이 필요없다.(입력받을 값이 없어서) -->
+    <!-- 그래서 회원검색이 되는 라우터로 연결해주면 됨 -->
+    <a href="http://127.0.0.1:3000/SelectAll"><button>회원전체검색</button></a>
+
+    <a href="http://127.0.0.1:5500/mynodejs_/public/ex06SelectOne.html"><button>회원검색</button></a>
+
+    
+    <!-- id값이 session에 없으면 로그인 버튼을 보여주고(로그인 안된 것) 로그인되면 로그아웃 버튼으로 보여주기(로그인 된 것) -->
+    <!-- Logout 라우터를 넣어주면 로그아웃이 됨 -->
+    <% if(id == null) { %>
+        <a href="http://127.0.0.1:5500/mynodejs_/public/ex05Login.html"><button>로그인</button></a>
+    <% }else{ %>
+        <a href="http://127.0.0.1:3000/Logout"><button>로그아웃</button></a>
+    <%}%>
+</body>
+</html>

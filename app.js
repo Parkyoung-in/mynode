@@ -1,54 +1,68 @@
-const express = require('express');     // 설치된 express 사용 선언
-const app = express(); // express 실행 -> app이라는 변수에 대입
+const express = require("express");  // express로 변수 선언해서 express 설치한 것을 가지고 옴 
+const app = express();  // express를 실행해서 app이라는 변수에 대입  
+//127.0.0.1 // 우리가 이 express를 몇 번 방에서 실행할건지(포트번호)를 지정해줘야 실행이 됨 / 3000번이라는 포트를 지정해주기
 
-const router = require('./router/router.js');
+const router = require("./router/router.js"); 
+// router.js에서 module까지 읽었을 때 다시 돌아오는 것을 받기 위해 const router로 선언해준다. 
 
-// const router = express.Router();    // express 갖고 있는 기능 중에 router 기능 사용
+// static 등록을 안하면 ejs가 css를 잡지못해서 등록해줘야함
+app.use(express.static("./public"));
 
-// router.get('/plus', function(req,res){  // req : 사용자의 모든 정보를 가지고 있는것 // res : 응답   // /plus라우터 기능정의 및 등록
-//     console.log('/plus 라우터 호출')
-//     console.log(parseInt(req.query.num1)+parseInt(req.query.num2));        // body-parser는 post방식에서만 쓰인다.
+// body-parser : post 방식을 분석할 수 있는 함수 
+// 가지고 오는 부분이 있고 미들웨어를 선언하는 부분이 있음 
+const bodyparser = require("body-parser");
 
-//     res.writeHead(200, {'Content-Type':'text/html;charset=utf-8'});    // res.writeHead : 사용자에게 응답할 html 파일을 지정
-//     res.write('<html>');                                                // res.write : 보내지는 html에 써지는것
-//     res.write('<body>');
-//     res.write('응답성공<br>');
-//     res.write('결과값 : ' + (parseInt(req.query.num1)+parseInt(req.query.num2)));
-//     res.write('</body>');
-//     res.write('</html>');
-//     res.end();                                                          // res.end() : 응답된 파일 전송
-// });
+let ejs = require('ejs');
+const DBrouter = require("./router/DBrouter.js");
+const EJSrouter = require("./router/EJSrouter.js")
+const Sessionrouter = require("./router/Sessionrouter.js")
 
-// router.get('/cal', (req,res) => {       // /cal라우터 기능정의 및 등록
-//     // 1. 사용자가 입력한 값을 가져오기
-//     let num1 = req.query.num1;
-//     let num2 = req.query.num2;
-//     let cal = req.query.cal;
+const session = require("express-session"); // 세션기능
+const mysql_session = require("express-mysql-session"); // 세션이 저장되는 영역(mysql로)
+const Messagerouter = require("./router/Messagerouter.js");
 
-//     console.log(num1 + cal + num2);
+app.set('view engine', 'ejs');
+// set : 이미 nodejs에 있는 속성 중 하나(설정) / use : 기능이 있는 미들웨어를 쓰겠다(ex)router) 
 
-//     // 2. 사용자가 입력한 기호에 맞는 연산 결과 값을 브라우저에 출력하시오.
-//     res.writeHead(200, {'Content-Type':'text/html;charset=utf-8'});
-//     res.write('<html>');                                                
-//     res.write('<body>');
-//     if(cal=='+') {
-//         res.write('결과값 : ' + (parseInt(req.query.num1) + parseInt(req.query.num2)));
-//     } else if(cal=='-') {
-//         res.write('결과값 : ' + (parseInt(req.query.num1) - parseInt(req.query.num2)));
-//     } else if(cal=='*') {
-//         res.write('결과값 : ' + (parseInt(req.query.num1) * parseInt(req.query.num2)));
-//     } else {
-//         res.write('결과값 : ' + (parseInt(req.query.num1) / parseInt(req.query.num2)));
-//     }
-//     res.write('</body>');
-//     res.write('</html>');
-//     res.end();
-// })
+// mysql에 대한 정보를 담고 있는 변수 선언하기
+// config에 저장해놨기 때문에 안에 내용만 복붙함
+let conn = {
+    host : "127.0.0.1",
+    user : "root",
+    password : "duddls5163!",
+    port : "3306",   
+    database : "nodejs_db"
+}
 
-const bodyparser = require('body-parser'); // body-parser는 express 가지고 있는 기능중 하나로 post방식에서 데이터를 분석할수 있는 기능
-app.use(bodyparser.urlencoded({extended:false})); // post 방식일때, body 영역을 분석해주는 미들웨어로 bodyparser 등록
-// 반드시 방법을 설정하고 router를 등록해야한다.
-app.use(router);        // 미들웨어로 router 등록
+// session 기능 가지고와서 conn 정보를 넣고 DB에서 사용할 수 있는 정보인지 확인하고 나서 변수에 넣어줌 
+// mysql에 session을 담을 수 있는 공간이 있는지 확인하는 것 
+let conn_session = new mysql_session(conn);
+
+// 실제 session기능(저장위치: mysql)을 미들웨어로 등록한 것
+app.use(session({
+    secret : "smart",
+    resave : false, // 매번 서버에 저장할건지 안할건지 
+    saveUninitialized : true, // 매번시작할 때마다 초기화 할건지
+    store : conn_session // 세션이 저장되는 공간
+}))
 
 
-app.listen(3000);       // 현재 서버파일의 port번호 설정
+// body-parser가 가진 내장된 설정은 잘 사용하지 않아서 
+// post방식일 때 body 영역을 분석해주는 미들웨어로 bodyparser 등록 
+// 밑에 router 등록하기 전에 이거 먼저 등록해야함 
+app.use(bodyparser.urlencoded({extended:false}));
+
+app.use(router); // 미들웨어로 router 등록 / 등록을 해줘야 쓸 수 있음 
+app.use(DBrouter);
+app.use(EJSrouter);
+app.use(Sessionrouter);
+app.use(Messagerouter);
+
+app.listen(3000); // 현재 서버파일의 포트 번호 설정 
+
+
+// ex01.html에서 client가 실행 -> submit 버튼 누르면 입력된 num1, num2 값이 넘어감
+// -> 서버가 가진 방 중에서 3000번이라는 포트 방으로 들어감 -> 그안에 /plus라는 라우터로 들어감 
+// -> 라우터 안에 있는 request의 .query라는 기능으로 num1, num2를  ... 
+
+// 할 때 라우터를 먼저 만들어주기 ?

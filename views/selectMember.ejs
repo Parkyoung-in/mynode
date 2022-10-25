@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <title>Document</title>
+</head>
+<body>
+   <body style="text-align: center;">
+      <!-- Wrapper -->
+         <div id="wrapper">
+            <!-- Menu -->
+               <nav id="Update">
+                  <table>
+                     <caption><h2>회원관리페이지</h2></caption>
+                     <tr>
+                        <td>Email</td>
+                        <td>HP</td>
+                        <td>Addr</td>
+                                <td>삭제여부</td>
+                     </tr>
+                     <!-- row_name안에 있는 데이터를 출력하시오 -->
+                     <% for(let i=0;i<row_name.length;i++){%>
+                        <tr>
+                           <td><%=row_name[i].email%></td>
+                           <td><%=row_name[i].tel%></td> 
+                           <td><%=row_name[i].address%></td>
+                           <td><a href="http://127.0.0.1:3000/MessageDelete?email=<%=row_name[i].email%>">삭제</a></td>
+                           <!-- MessageDelete 라우터를 생성하고 클릭한 해당 이메일의 정보를 삭제하시오(SelectAll.ejs 참고)
+                           삭제에 성공하면 selectMember.ejs로 이동하시오 -->
+                        </tr>    
+                     <%}%>
+                  </table>
+               </nav>
+         </div>
+      <!-- Scripts -->
+         <script src="assets/js/jquery.min.js"></script>
+         <script src="assets/js/jquery.scrolly.min.js"></script>
+         <script src="assets/js/jquery.scrollex.min.js"></script>
+         <script src="assets/js/skel.min.js"></script>
+         <script src="assets/js/util.js"></script>
+         <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+         <script src="assets/js/main.js"></script>
+   </body>
+</body>
+</html>
